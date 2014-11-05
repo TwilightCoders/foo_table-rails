@@ -31,6 +31,7 @@
 
         p.init = function (ft) {
             if (ft.options.paginate === true) {
+                if ($(ft.table).data('page') === false) return;
                 $(ft.table).bind({
                     'footable_initialized': function () {
                         ft.pageInfo = new pageInfo(ft);
@@ -178,6 +179,6 @@
         };
     }
 
-    w.footable.plugins.register(new Paginate(), defaults);
+    w.footable.plugins.register(Paginate, defaults);
 
 })(jQuery, window);

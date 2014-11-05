@@ -115,7 +115,8 @@
                 cls = ft.options.classes.sort,
                 evt = ft.options.events.sort;
 
-            ascending = (ascending === undefined) ? !$th.hasClass(cls.sorted) : ascending;
+            ascending = (ascending === undefined) ? $th.hasClass(cls.sorted) :
+                (ascending === 'toggle') ? !$th.hasClass(cls.sorted) : ascending;
 
             if (column.sort.ignore === true) return true;
 
@@ -180,6 +181,6 @@
         };
     }
 
-    w.footable.plugins.register(new Sort(), defaults);
+    w.footable.plugins.register(Sort, defaults);
 
 })(jQuery, window);

@@ -1,15 +1,15 @@
 ﻿/*!
  * FooTable - Awesome Responsive Tables
- * Version : 2.0
+ * Version : 2.0.1
  * http://fooplugins.com/plugins/footable-jquery/
  *
  * Requires jQuery - http://jquery.com/
  *
- * Copyright 2012 Steven Usher & Brad Vincent
+ * Copyright 2013 Steven Usher & Brad Vincent
  * Released under the MIT license
  * You are free to use FooTable in commercial projects as long as this copyright header is left intact.
  *
- * Date: 23 Aug 2013
+ * Date: 31 Aug 2013
  */
 (function ($, w, undefined) {
     w.footable = {
@@ -31,7 +31,7 @@
                 }
             },
             addRowToggle: true,
-            calculateWidthAndHeightOverride: null,
+            calculateWidthOverride: null,
             toggleSelector: ' > tbody > tr:not(.footable-row-detail)', //the selector to show/hide the detail row
             columnDataSelector: '> thead > tr:last-child > th, > thead > tr:last-child > td', //the selector used to find the column data in the thead
             detailSeparator: ':', //the seperator character used when building up the detail row
@@ -137,39 +137,55 @@
 
         plugins: {
             _validate: function (plugin) {
-                ///<summary>Simple validation of the <paramref name="plugin"/> to make sure any members called by Foobox actually exist.</summary>
+                ///<summary>Simple validation of the <paramref name="plugin"/> to make sure any members called by FooTable actually exist.</summary>
                 ///<param name="plugin">The object defining the plugin, this should implement a string property called "name" and a function called "init".</param>
 
-                if (typeof plugin['name'] !== 'string') {
-                    if (w.footable.options.debug === true) console.error('Validation failed, plugin does not implement a string property called "name".', plugin);
+                if (!$.isFunction(plugin)) {
+                  if (w.footable.options.debug === true) console.error('Validation failed, expected type "function", received type "{0}".', typeof plugin);
+                  return false;
+                }
+                var p = new plugin();
+                if (typeof p['name'] !== 'string') {
+                    if (w.footable.options.debug === true) console.error('Validation failed, plugin does not implement a string property called "name".', p);
                     return false;
                 }
-                if (!$.isFunction(plugin['init'])) {
-                    if (w.footable.options.debug === true) console.error('Validation failed, plugin "' + plugin['name'] + '" does not implement a function called "init".', plugin);
+                if (!$.isFunction(p['init'])) {
+                    if (w.footable.options.debug === true) console.error('Validation failed, plugin "' + p['name'] + '" does not implement a function called "init".', p);
                     return false;
                 }
-                if (w.footable.options.debug === true) console.log('Validation succeeded for plugin "' + plugin['name'] + '".', plugin);
+                if (w.footable.options.debug === true) console.log('Validation succeeded for plugin "' + p['name'] + '".', p);
                 return true;
             },
             registered: [], // An array containing all registered plugins.
             register: function (plugin, options) {
-                ///<summary>Registers a <paramref name="plugin"/> and its default <paramref name="options"/> with Foobox.</summary>
+                ///<summary>Registers a <paramref name="plugin"/> and its default <paramref name="options"/> with FooTable.</summary>
                 ///<param name="plugin">The plugin that should implement a string property called "name" and a function called "init".</param>
-                ///<param name="options">The default options to merge with the Foobox's base options.</param>
+                ///<param name="options">The default options to merge with the FooTable's base options.</param>
 
                 if (w.footable.plugins._validate(plugin)) {
                     w.footable.plugins.registered.push(plugin);
-                    if (options !== undefined && typeof options === 'object') $.extend(true, w.footable.options, options);
-                    if (w.footable.options.debug === true) console.log('Plugin "' + plugin['name'] + '" has been registered with the Foobox.', plugin);
+                    if (typeof options === 'object') $.extend(true, w.footable.options, options);
                 }
             },
+            load: function(instance){
+              var loaded = [], registered, i;
+              for(i = 0; i < w.footable.plugins.registered.length; i++){
+                try {
+                  registered = w.footable.plugins.registered[i];
+                  loaded.push(new registered(instance));
+                } catch (err) {
+                  if (w.footable.options.debug === true) console.error(err);
+                }
+              }
+              return loaded;
+            },
             init: function (instance) {
-                ///<summary>Loops through all registered plugins and calls the "init" method supplying the current <paramref name="instance"/> of the Foobox as the first parameter.</summary>
-                ///<param name="instance">The current instance of the Foobox that the plugin is being initialized for.</param>
+                ///<summary>Loops through all registered plugins and calls the "init" method supplying the current <paramref name="instance"/> of the FooTable as the first parameter.</summary>
+                ///<param name="instance">The current instance of the FooTable that the plugin is being initialized for.</param>
 
-                for (var i = 0; i < w.footable.plugins.registered.length; i++) {
+                for (var i = 0; i < instance.plugins.length; i++) {
                     try {
-                        w.footable.plugins.registered[i]['init'](instance);
+                      instance.plugins[i]['init'](instance);
                     } catch (err) {
                         if (w.footable.options.debug === true) console.error(err);
                     }
@@ -242,6 +258,7 @@
         ft.breakpoints = [];
         ft.breakpointNames = '';
         ft.columns = {};
+        ft.plugins = w.footable.plugins.load(ft);
 
         var opt = ft.options,
             cls = opt.classes,
@@ -258,10 +275,10 @@
             }
         };
 
-        w.footable.plugins.init(ft);
-
         ft.init = function () {
             var $window = $(w), $table = $(ft.table);
+
+            w.footable.plugins.init(ft);
 
             if ($table.hasClass(cls.loaded)) {
                 //already loaded FooTable for the table, so don't init again
@@ -393,7 +410,7 @@
             });
 
             $table.find(opt.toggleSelector).unbind('click.footable').bind('click.footable', function (e) {
-                if ($table.is('.breakpoint') && $(e.target).is('td,.footable-toggle')) {
+                if ($table.is('.breakpoint') && $(e.target).is('td,.'+ cls.toggle)) {
                     $(this).trigger(trg.toggleRow);
                 }
             });
@@ -460,17 +477,12 @@
             return window.innerWidth || (document.body ? document.body.offsetWidth : 0);
         };
 
-        ft.getViewportHeight = function () {
-            return window.innerHeight || (document.body ? document.body.offsetHeight : 0);
-        };
-
-        ft.calculateWidthAndHeight = function ($table, info) {
-            if (jQuery.isFunction(opt.calculateWidthAndHeightOverride)) {
-                return opt.calculateWidthAndHeightOverride($table, info);
+        ft.calculateWidth = function ($table, info) {
+            if (jQuery.isFunction(opt.calculateWidthOverride)) {
+                return opt.calculateWidthOverride($table, info);
             }
             if (info.viewportWidth < info.width) info.width = info.viewportWidth;
-            if (info.viewportHeight < info.height) info.height = info.viewportHeight;
-
+            if (info.parentWidth < info.width) info.width = info.parentWidth;
             return info;
         };
 
@@ -508,22 +520,18 @@
 
             var info = {
                 'width': $table.width(),                  //the table width
-                'height': $table.height(),                //the table height
                 'viewportWidth': ft.getViewportWidth(),   //the width of the viewport
-                'viewportHeight': ft.getViewportHeight(), //the width of the viewport
-                'orientation': null
+                'parentWidth': $table.parent().width()    //the width of the parent
             };
 
-            info.orientation = info.viewportWidth > info.viewportHeight ? 'landscape' : 'portrait';
-
-            info = ft.calculateWidthAndHeight($table, info);
+            info = ft.calculateWidth($table, info);
 
             var pinfo = $table.data('footable_info');
             $table.data('footable_info', info);
             ft.raise(evt.resizing, { 'old': pinfo, 'info': info });
 
             // This (if) statement is here purely to make sure events aren't raised twice as mobile safari seems to do
-            if (!pinfo || ((pinfo && pinfo.width && pinfo.width !== info.width) || (pinfo && pinfo.height && pinfo.height !== info.height))) {
+            if (!pinfo || (pinfo && pinfo.width && pinfo.width !== info.width)) {
 
                 var current = null, breakpoint;
                 for (var i = 0; i < ft.breakpoints.length; i++) {

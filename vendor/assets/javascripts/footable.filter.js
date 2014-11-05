@@ -2,23 +2,6 @@
     if (w.footable === undefined || w.footable === null)
         throw new Error('Please check and make sure footable.js is included in the page and is loaded prior to this script.');
 
-    var jQversion = w.footable.version.parse($.fn.jquery);
-    if (jQversion.major === 1 && jQversion.minor < 8) { // For older versions of jQuery, anything below 1.8
-        $.expr[':'].ftcontains = function (a, i, m) {
-            return $(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
-        };
-    } else { // For jQuery 1.8 and above
-        $.expr[':'].ftcontains = $.expr.createPseudo(function (arg) {
-            return function (elem) {
-                var text = $(elem).find('td').text();
-                var data = $(elem).find('td[data-value]').each(function () {
-                    text += $(this).data('value');
-                });
-                return text.toUpperCase().indexOf(arg.toUpperCase()) >= 0;
-            };
-        });
-    }
-
     var defaults = {
         filter: {
             enabled: true,
@@ -30,10 +13,12 @@
                 var $t = $(this),
                     $table = $t.parents('table:first'),
                     filter = $table.data('current-filter').toUpperCase(),
-                    text = $t.find('td').text(),
-                    data = $t.find('td[data-value]').each(function () {
+                    text = $t.find('td').text();
+                if (!$table.data('filter-text-only')) {
+                    $t.find('td[data-value]').each(function () {
                         text += $(this).data('value');
                     });
+                }
                 return text.toUpperCase().indexOf(filter) >= 0;
             }
         }
@@ -45,6 +30,7 @@
         p.init = function (ft) {
             p.footable = ft;
             if (ft.options.filter.enabled === true) {
+                if ($(ft.table).data('filter') === false) return;
                 ft.timers.register('filter');
                 $(ft.table).bind({
                     'footable_initialized': function (e) {
@@ -100,23 +86,22 @@
                 minimum = $table.data('filter-minimum') || ft.options.filter.minimum,
                 clear = !filterString;
 
-            if (filterString && filterString.length < minimum) {
-                return; //if we do not have the minimum chars then do nothing
-            }
-
             //raise a pre-filter event so that we can cancel the filtering if needed
             var event = ft.raise('footable_filtering', { filter: filterString, clear: clear });
             if (event && event.result === false) return;
+            if (event.filter && event.filter.length < minimum) {
+              return; //if we do not have the minimum chars then do nothing
+            }
 
-            if (clear) {
+          if (event.clear) {
                 p.clearFilter();
             } else {
-                var filters = filterString.split(' ');
+                var filters = event.filter.split(' ');
 
                 $table.find('> tbody > tr').hide().addClass('footable-filtered');
                 var rows = $table.find('> tbody > tr:not(.footable-row-detail)');
                 $.each(filters, function (i, f) {
-                    if (f && f.length) {
+                    if (f && f.length > 0) {
                         $table.data('current-filter', f);
                         rows = rows.filter(ft.options.filter.filterFunction);
                     }
@@ -125,8 +110,8 @@
                     p.showRow(this, ft);
                     $(this).removeClass('footable-filtered');
                 });
-                $table.data('filter-string', filterString);
-                ft.raise('footable_filtered', { filter: filterString, clear: false });
+                $table.data('filter-string', event.filter);
+                ft.raise('footable_filtered', { filter: event.filter, clear: false });
             }
         };
 
@@ -152,6 +137,6 @@
         };
     }
 
-    w.footable.plugins.register(new Filter(), defaults);
+    w.footable.plugins.register(Filter, defaults);
 
 })(jQuery, window);
