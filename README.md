@@ -25,6 +25,9 @@ probably want the following in your application.js and application.css:
 
 ```js
 //= require footable.core
+// ... and plugins ...
+// or...
+//= require footable.all
 ```
 
 ```css
