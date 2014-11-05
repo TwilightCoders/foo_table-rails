@@ -36,9 +36,17 @@ probably want the following in your application.js and application.css:
 Additional syntax modes can be added to your application.js:
 
 ```js
-//= require footable.filter
+//= require footable.paginate
 //= require footable.sort
 // ...
+```
+
+### Adding a theme
+
+Additional CSS themes can be added to your application.css
+
+```css
+//= require footable.bootstrap
 ```
 
 ### Contributing
