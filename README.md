@@ -46,7 +46,7 @@ Additional syntax modes can be added to your application.js:
 Additional CSS themes can be added to your application.css
 
 ```css
-//= require footable.bootstrap
+//= require footable.metro
 ```
 
 ### Contributing
