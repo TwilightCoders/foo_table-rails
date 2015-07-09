@@ -26,9 +26,9 @@
         var sort_col = $(ft.table).find("th")[sort_colnum];
         var descending = $(sort_col).hasClass("footable-sorted-desc");
         $(ft.table).data("status_descending", descending);
-            
+
         if (ft.pageInfo) {
-            var pagenum = ft.pageInfo.currentPage; 
+            var pagenum = ft.pageInfo.currentPage;
             $(ft.table).data("status_pagenum", pagenum);
         }
 
@@ -41,7 +41,7 @@
         $(ft.table).data("status_filter_val", filter_val);
 
         // manage expanded or collapsed rows:
-	var row, rowlist, expanded_rows;
+    var row, rowlist, expanded_rows;
         if (event.type == 'footable_row_expanded') {
             row = event.row;
             if (row) {
@@ -62,7 +62,7 @@
                 if (rowlist) {
                     expanded_rows = rowlist.split(',');
                 }
-                new_expanded_rows = [];
+                var new_expanded_rows = [];
                 for (var i in expanded_rows) {
                     if (expanded_rows[i] == row.rowIndex) {
                         new_expanded_rows = expanded_rows.splice(i, 1);
@@ -79,7 +79,7 @@
      p.name = 'Footable LucidBookmarkable';
      p.init = function(ft) {
          if (ft.options.bookmarkable.enabled) {
-             
+
              $(ft.table).bind({
                  'footable_initialized': function(){
                      var tbl_id     = ft.table.id;
@@ -91,13 +91,13 @@
 
                      if (q_filter) {
                          var filter_field_id = $(ft.table).data('filter');
-                         $(filter_field_id).val(q_filter); 
+                         $(filter_field_id).val(q_filter);
                          $(ft.table).trigger('footable_filter', {filter: q_filter});
                      }
                      if (q_page_num) {
                          $(ft.table).data('currentPage',  q_page_num);
-			 // we'll check for sort before triggering pagination, since
-			 // sorting triggers pagination. 
+             // we'll check for sort before triggering pagination, since
+             // sorting triggers pagination.
                      }
                      if (typeof q_sorted !== 'undefined') {
                          var footableSort = $(ft.table).data('footable-sort');
@@ -113,7 +113,7 @@
                      if (q_expanded) {
                          var expanded_rows = q_expanded.split(',');
                          for (var i in expanded_rows) {
-                             row = $(ft.table.rows[expanded_rows[i]]);
+                             var row = $(ft.table.rows[expanded_rows[i]]);
                              row.find('> td:first').trigger('footable_toggle_row');
                          }
                      }
@@ -132,7 +132,7 @@
                          var sorted     = tbl_id + '_s';
                          var descending = tbl_id + '_d';
                          var expanded   = tbl_id + '_e';
-                         
+
                          var hash = location.hash.replace(/^\#/, '&');
                          var hashkeys = [filter, page_num, sorted, descending, expanded];
                          // trim existing elements out of the hash.
@@ -164,7 +164,7 @@
          }
      };
  }
- 
+
  w.footable.plugins.register(Bookmarkable, defaults);
-  
+
 })(jQuery, window);

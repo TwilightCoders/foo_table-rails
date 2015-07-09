@@ -23,7 +23,7 @@
         .unbind('striping')
         .bind({
           'footable_initialized.striping footable_row_removed.striping footable_redrawn.striping footable_sorted.striping footable_filtered.striping': function () {
-            
+
             if ($(this).data('striping') === false) return;
 
             p.setupStriping(ft);

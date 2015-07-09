@@ -1,4 +1,4 @@
-# FooTable::Rails [![Build Status](https://secure.travis-ci.org/TwilightCoders/foo_table-rails.png)](http://travis-ci.org/TwilightCoders/foo_table-rails) [![Gem Version](https://badge.fury.io/rb/foo_table-rails.png)](http://badge.fury.io/rb/foo_table-rails) [![Code Climate](https://codeclimate.com/github/TwilightCoders/foo_table-rails.png)](https://codeclimate.com/github/TwilightCoders/foo_table-rails) [![Dependancies](http://img.shields.io/gemnasium/TwilightCoders/foo_table-rails.svg)](https://gemnasium.com/TwilightCoders/foo_table-rails)
+# FooTable::Rails [![Build Status](https://secure.travis-ci.org/TwilightCoders/foo_table-rails.png)](http://travis-ci.org/TwilightCoders/foo_table-rails) [![Gem Version](https://badge.fury.io/rb/foo_table-rails.png)](http://badge.fury.io/rb/foo_table-rails) [![Code Climate](https://codeclimate.com/github/TwilightCoders/foo_table-rails.png)](https://codeclimate.com/github/TwilightCoders/foo_table-rails) [![Dependency Status](https://gemnasium.com/TwilightCoders/foo_table-rails.svg)](https://gemnasium.com/TwilightCoders/foo_table-rails)
 
 Wire up the [FooTable](http://fooplugins.com/plugins/footable-jquery/) [assets](https://github.com/bradvin/FooTable) for your Rails
 applications.
@@ -58,4 +58,4 @@ Find a mistake? New version of FooTable::Rails? Submit a pull request!
 
 ---
 
-Copyright (c) 2014 Dale Stevens, released under the MIT license
+Copyright (c) 2015 Dale Stevens, released under the MIT license
