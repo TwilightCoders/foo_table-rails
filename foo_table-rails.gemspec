@@ -14,7 +14,7 @@ Gem::Specification.new do |gem|
   gem.files         = Dir["{lib,vendor}/**/*"] + ["LICENSE", "LICENSE.FooTable", "README.md"]
   gem.version       = FooTable::Rails::VERSION
 
-  gem.add_dependency 'railties', '~> 3.1'
+  gem.add_dependency 'railties', '>= 3.1', '< 4.3'
   gem.add_development_dependency 'bundler', '>= 1.0'
   gem.add_development_dependency 'rake'
 end
