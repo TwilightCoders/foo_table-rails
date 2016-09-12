@@ -1,5 +1,5 @@
 module FooTable
   module Rails
-    VERSION = '2.0.3.pre3'
+    VERSION = '2.0.3'
   end
 end
