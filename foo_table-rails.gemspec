@@ -15,6 +15,6 @@ Gem::Specification.new do |gem|
   gem.version       = FooTable::Rails::VERSION
 
   gem.add_dependency 'railties', '>= 3.1', '< 4.3'
-  gem.add_development_dependency 'bundler', '>= 1.0'
-  gem.add_development_dependency 'rake'
+  gem.add_development_dependency 'bundler', '~> 1.0'
+  gem.add_development_dependency 'rake', '~> 0'
 end
